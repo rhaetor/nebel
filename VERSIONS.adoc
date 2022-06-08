@@ -1,0 +1,17 @@
+= Nebel Version history:
+
+NOTE: Major versions are incompatible with previous versions.
+
+[cols="1,4,4"]
+|===
+|Version |Main changes |Notes
+
+| 3.0.0  |  Python 3 remastering. | Documentation changes.
+
+| 2.1.x  |  New `split` subcommand. |
+
+| 2.0.x  |  Uses the new convention for modular file prefixes. | The separator character is part of the customizable prefix, thus enabling you to use a hyphen separator.
+
+| 1.0.0  |  First numbered version | Uses the old convention for modular file prefixes (underscore separator is hardcoded).
+
+|===

@@ -21,14 +21,14 @@ The `nebel` utility is easy to install, as it does not require any special or no
 
 Prerequisites:
 
-* Python 2.7 -- installed by default on Fedora Linux.
+* Python 3.6 or higher
 
 How to install:
 
 . Clone this repository, as follows:
 +
 ----
-git clone git@github.com:fbolton/nebel.git
+git clone https://github.com/redhat-documentation/nebel/
 ----
 
 . Add the `bin/nebel` executable to your `PATH`. For example, in the Bash shell:
@@ -651,12 +651,16 @@ nebel mv modules/getting-started/p_{}.adoc modules/getting-started/proc-{}.adoc
 
 The `nebel` utility updates `include` directives as well as links that contain the file names that are being changed.
 
-[id="backwards-incompatible-change"]
-== Backwards-incompatible change to modular file prefixes
+[id="modular-file-prefixes"]
+== Modular file prefixes
 
-Prior to Nebel version 2, Nebel assumed that the underscore, `_`, was the separator for modular file prefixes. For example, file names had prefixes such `proc_`, `con_`, and `ref_`. It was possible to customize the prefixes, by setting some properties in the `nebel.cfg` file, but it was not possible to change the separator to be anything other than an underscore.
+The default modular file prefix is the underscore, `_`.
 
-Starting with Nebel version 2, however, it is possible to customize file prefixes, including the separator character, by editing settings in the `nebel.cfg` file. For example:
+was the separator for modular file prefixes. For example, file names had prefixes such `proc_`, `con_`, and `ref_`. It was possible to customize the prefixes, by setting some properties in the `nebel.cfg` file, but it was not possible to change the separator to be anything other than an underscore.
+
+You can customize the file prefixes, including the separator character, by editing settings in the `nebel.cfg` file.
+
+For example:
 
 ----
 [Nebel]
@@ -669,22 +673,18 @@ prefix.reference = ref-
 ----
 
 [id="nebel-versioning"]
-== Nebel versioning
+== Check the Nebel version
 
-Nebel now supports a version flag, which you can use to check the particular version you are using, for example:
+You can use `-v` to check which version you are using.
+
+For example:
 
 ----
 nebel -v
 Nebel 2.1.x (dev release)
 ----
 
-Here is a recent version history:
-
-* 1.0.0 -- First numbered version (from April 4, 2020), uses the old convention for modular file prefixes (underscore separator is hardcoded).
-* 2.0.x -- Backwards-incompatible update, uses the new convention for modular file prefixes (separator character is part of the customizable prefix, thus enabling you to use a hyphen separator).
-* 2.1.x -- Supports the new `nebel split` subcommand.
-
 [id="nebel-python-interpreter"]
 == Nebel Python interpreter
 
-The `nebel` utility is coded for the Python 2 interpreter and does not work with Python 3. On May 15, I modified the `nebel` binary, so that it calls the Python 2 interpreter explicitly (instead of calling the ambiguous Python executable). This ensures that `nebel` also runs correctly on recent Fedora and RHEL releases. In the long run, `nebel` will need to be updated for Python 3.
+The `nebel` utility only works Python 3.
