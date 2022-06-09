@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 SCRIPTDIR=$(dirname $0)
 export PYTHONPATH=$SCRIPTDIR/..
 
 #python -m cProfile -s ncalls $PYTHONPATH/nebel/commands.py "$@"
-python2 $PYTHONPATH/nebel/commands.py "$@"
+python $PYTHONPATH/nebel/commands.py "$@"
+
