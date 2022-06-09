@@ -1,18 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1dc8d94c-7fd5-4ca9-b0e4-df630c13ba20" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/VERSIONS.adoc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/nebel/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/test_commands.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/test_context.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/test_factory.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tox.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.adoc" beforeDir="false" afterPath="$PROJECT_DIR$/README.adoc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/nebel" beforeDir="false" afterPath="$PROJECT_DIR$/bin/nebel" afterDir="false" />
-    </list>
+    <list default="true" id="1dc8d94c-7fd5-4ca9-b0e4-df630c13ba20" name="Changes" comment="Cleaning up docs and adding directories." />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -49,7 +38,8 @@
     "node.js.detected.package.stylelint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.stylelint": "",
-    "nodejs_package_manager_path": "npm"
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -101,7 +91,7 @@
       <updated>1654619879062</updated>
       <workItem from="1654619880344" duration="35000" />
       <workItem from="1654619920700" duration="5241000" />
-      <workItem from="1654700519702" duration="2008000" />
+      <workItem from="1654700519702" duration="4395000" />
     </task>
     <servers />
   </component>
@@ -110,8 +100,10 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Cleaning up docs and adding directories." />
+    <option name="LAST_COMMIT_MESSAGE" value="Cleaning up docs and adding directories." />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/nebel$main.coverage" NAME="main Coverage Results" MODIFIED="1654703894615" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/nebel" />
+    <SUITE FILE_PATH="coverage/nebel$main.coverage" NAME="main Coverage Results" MODIFIED="1654704466958" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/nebel" />
   </component>
 </project>
