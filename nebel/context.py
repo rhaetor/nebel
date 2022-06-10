@@ -31,7 +31,8 @@ class NebelContext:
             'ConvertedFromFile',
             'ConvertedFromID',
             'ConvertedFromTitle',
-            'Level'
+            'Level',
+            'TargetModQuality'
         }
         self.allMetadataFields = self.mandatoryMetadataFields | self.optionalMetadataFields
         self.templatePath = ''
