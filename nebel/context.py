@@ -1,8 +1,8 @@
-'''
-Created on January 2, 2019
+#!/usr/bin/env python3
+"""
 
-@author fbolton
-'''
+"""
+
 
 from __future__ import absolute_import
 from __future__ import print_function
