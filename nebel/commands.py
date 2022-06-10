@@ -7,22 +7,19 @@ For example, you can use Nebel to create an instance of
 an assembly, procedure, concept, or reference file.
 """
 
-
-from __future__ import absolute_import
-from __future__ import print_function
-import os
-import re
-import sys
-import tempfile
-import shutil
 import datetime
 import glob
 import hashlib
+import os
+import re
+import shutil
 import subprocess
+import sys
+import tempfile
+
+from six.moves import input
 from six.moves import map
 from six.moves import zip
-from six.moves import input
-
 
 
 class Tasks:
@@ -45,20 +42,20 @@ class Tasks:
             for assemblyfile in args.parent_assemblies.split():
                 self.add_include_to_assembly(assemblyfile, modulefile)
 
-    def create_assembly(self,args):
-        metadata = {'Type':'assembly'}
+    def create_assembly(self, args):
+        metadata = {'Type': 'assembly'}
         self._create(args, metadata)
 
-    def create_procedure(self,args):
-        metadata = {'Type':'procedure'}
+    def create_procedure(self, args):
+        metadata = {'Type': 'procedure'}
         self._create(args, metadata)
 
-    def create_concept(self,args):
-        metadata = {'Type':'concept'}
+    def create_concept(self, args):
+        metadata = {'Type': 'concept'}
         self._create(args, metadata)
 
-    def create_reference(self,args):
-        metadata = {'Type':'reference'}
+    def create_reference(self, args):
+        metadata = {'Type': 'reference'}
         self._create(args, metadata)
 
     def add_include_to_assembly(self, assemblyfile, includedfile, leveloffset=1):
@@ -95,14 +92,13 @@ class Tasks:
         # Move new file
         shutil.move(abs_path, assemblyfile)
 
-
-    def create_from(self,args):
+    def create_from(self, args):
         fromfile = args.FROM_FILE
         if fromfile.endswith('.csv'):
             self._create_from_csv(args)
             return
-        elif fromfile.startswith(self.context.ASSEMBLIES_DIR)\
-                and fromfile.endswith('.adoc')\
+        elif fromfile.startswith(self.context.ASSEMBLIES_DIR) \
+                and fromfile.endswith('.adoc') \
                 and os.path.basename(fromfile).startswith(self.context.ASSEMBLY_PREFIX):
             self._create_from_assembly(args)
             return
@@ -146,7 +142,7 @@ class Tasks:
         title = title.lower()
         return title
 
-    def _create_from_assembly(self,args):
+    def _create_from_assembly(self, args):
         asfile = args.FROM_FILE
         regexp = re.compile(r'^\s*include::[\./]*modules/([^\[]+)\[[^\]]*\]')
         with open(asfile, 'r') as f:
@@ -164,7 +160,6 @@ class Tasks:
                         metadata['ModuleID'] = self.moduleid_of_file(basename)
                         metadata['ParentAssemblies'] = asfile
                         self.context.moduleFactory.create(metadata)
-
 
     def adoc_split(self, args):
         frompattern = os.path.normpath(args.FROM_FILE)
@@ -193,7 +188,8 @@ class Tasks:
             equalssigncount = 0
             lines = self._resolve_includes(fromfile)
             indexofnextline = 0
-            self._parse_from_annotated(metadata, fromfile, lines, indexofnextline, equalssigncount, selectedconditions, args.timestamp)
+            self._parse_from_annotated(metadata, fromfile, lines, indexofnextline, equalssigncount, selectedconditions,
+                                       args.timestamp)
 
     def _parse_from_annotated(
             self,
@@ -202,10 +198,10 @@ class Tasks:
             lines,
             indexofnextline,
             equalssigncount,
-            selectedconditions = None,
-            timestamp = False,
-            showcontentstack = [],
-            currconditionstack = []
+            selectedconditions=None,
+            timestamp=False,
+            showcontentstack=[],
+            currconditionstack=[]
     ):
         # Define some enums for state machine
         REGULAR_LINES = 0
@@ -232,12 +228,12 @@ class Tasks:
         regexp_metadata = re.compile(r'^\s*//\s*(\w+)\s*:\s*(.*)')
         regexp_id_line1 = re.compile(r'^\s*\[\[\s*(\S+)\s*\]\]\s*$')
         regexp_id_line2 = re.compile(r'^\s*\[id\s*=\s*[\'"]\s*(\S+)\s*[\'"]\]\s*$')
-        regexp_ifdef    = re.compile(r'^ifdef::([^\[]+)\[\]')
+        regexp_ifdef = re.compile(r'^ifdef::([^\[]+)\[\]')
         regexp_ifdef_single = re.compile(r'^ifdef::([^\[]+)\[([^\]]+)\]')
-        regexp_ifndef   = re.compile(r'^ifndef::([^\[]+)\[\]')
+        regexp_ifndef = re.compile(r'^ifndef::([^\[]+)\[\]')
         regexp_ifndef_single = re.compile(r'^ifndef::([^\[]+)\[([^\]]+)\]')
-        regexp_ifeval   = re.compile(r'^ifeval::\[([^\]]*)\]')
-        regexp_endif    = re.compile(r'^endif::([^\[]*)\[\]')
+        regexp_ifeval = re.compile(r'^ifeval::\[([^\]]*)\]')
+        regexp_endif = re.compile(r'^endif::([^\[]*)\[\]')
         regexp_title = re.compile(r'^(=+)\s+(\S.*)')
 
         childmetadata = {}
@@ -303,7 +299,7 @@ class Tasks:
                 if result is not None:
                     currconditionstack.append('')
                     showcontentstack.append(showcontent)
-                    print ('WARNING: ifeval not supported: defaults to showing content')
+                    print('WARNING: ifeval not supported: defaults to showing content')
                     # Do not include tagged line in output
                     indexofnextline += 1
                     continue
@@ -324,7 +320,8 @@ class Tasks:
 
             if parsing_state == REGULAR_LINES:
                 line = lines[indexofnextline]
-                if (regexp_metadata.search(line) is None) and (regexp_id_line1.search(line) is None) and (regexp_id_line2.search(line) is None) and (regexp_title.search(line) is None):
+                if (regexp_metadata.search(line) is None) and (regexp_id_line1.search(line) is None) and (
+                        regexp_id_line2.search(line) is None) and (regexp_title.search(line) is None):
                     # Regular line
                     parsedcontentlines.append(line)
                     indexofnextline += 1
@@ -397,7 +394,7 @@ class Tasks:
                             showcontentstack,
                             currconditionstack
                         )
-                        #if ('Type' in childmetadata) and (childmetadata['Type'].lower() == 'assembly'):
+                        # if ('Type' in childmetadata) and (childmetadata['Type'].lower() == 'assembly'):
                         #    print ('include::' + generated_file + '[leveloffset=+1]')
                         childmetadata = {}
                         parsedcontentlines.append('\n')
@@ -427,7 +424,7 @@ class Tasks:
                         childmetadata[metadata_name] = metadata_value
                     else:
                         print('WARNING: Unknown metadata "' + metadata_name + '" in file ' + fromfilepath)
-                    #print 'Metadata: ' + metadata_name + ' = ' + metadata_value
+                    # print 'Metadata: ' + metadata_name + ' = ' + metadata_value
                     continue
                 # Parse ID line
                 original_id = ''
@@ -456,8 +453,6 @@ class Tasks:
                     expecting_title_line = False
                     childmetadata = {}
 
-
-
     def _scan_file_for_includes(self, asfile, recursive=False):
         includedfilelist = []
         regexp = re.compile(r'^\s*include::([^\[]+)\[[^\]]*\]')
@@ -467,7 +462,8 @@ class Tasks:
                 if result is not None:
                     includedfile = self.context.resolve_raw_attribute_value(result.group(1))
                     directory = os.path.dirname(asfile)
-                    path_to_included_file = os.path.relpath(os.path.realpath(os.path.normpath(os.path.join(directory, includedfile))))
+                    path_to_included_file = os.path.relpath(
+                        os.path.realpath(os.path.normpath(os.path.join(directory, includedfile))))
                     if includedfile.endswith('.adoc'):
                         includedfilelist.append(path_to_included_file)
         allincludedfilelist = includedfilelist
@@ -498,7 +494,7 @@ class Tasks:
         regexp_include = re.compile(r'^\s*include::([^\[]+)\[([^\]]*)\]')
         regexp_title = re.compile(r'^(=+)\s+(\S.*)')
         regexp_tag_begin = re.compile(r'tag::([^\[]+)\[\]')
-        regexp_tag_end   = re.compile(r'end::([^\[]+)\[\]')
+        regexp_tag_end = re.compile(r'end::([^\[]+)\[\]')
         with open(file, 'r') as f:
             for line in f:
                 if istaggingactive:
@@ -538,7 +534,7 @@ class Tasks:
                 result = regexp_include.search(line)
                 if result is not None:
                     includedfile = self.context.resolve_raw_attribute_value(result.group(1))
-                    options      = result.group(2)
+                    options = result.group(2)
                     optmap = self._parse_include_opts(options)
                     childbaselevel = baselevel
                     if 'leveloffset' in optmap:
@@ -548,13 +544,15 @@ class Tasks:
                         else:
                             childbaselevel = int(leveloffset)
                     directory = os.path.dirname(file)
-                    path_to_included_file = os.path.relpath(os.path.realpath(os.path.normpath(os.path.join(directory, includedfile))))
+                    path_to_included_file = os.path.relpath(
+                        os.path.realpath(os.path.normpath(os.path.join(directory, includedfile))))
                     taglist = []
                     if ('tag' in optmap):
                         taglist.append(optmap['tag'].strip())
                     if ('tags' in optmap):
                         taglist.extend(optmap['tags'].split(';'))
-                    linesinfile.extend(self._resolve_includes(path_to_included_file, baselevel=childbaselevel, selectedtags=taglist))
+                    linesinfile.extend(
+                        self._resolve_includes(path_to_included_file, baselevel=childbaselevel, selectedtags=taglist))
                     continue
                 linesinfile.append(line)
         return linesinfile
@@ -569,12 +567,12 @@ class Tasks:
                 optmap[prop.strip().lower()] = value.strip()
         return optmap
 
-    def _create_from_csv(self,args):
+    def _create_from_csv(self, args):
         csvfile = args.FROM_FILE
         USING_LEVELS = False
         with open(csvfile, 'r') as filehandle:
             # First line should be the column headings
-            headings = filehandle.readline().strip().replace(' ','')
+            headings = filehandle.readline().strip().replace(' ', '')
             headinglist = headings.split(',')
             # Alias 'NestingLevel' to 'Level'
             if 'NestingLevel' in headinglist:
@@ -611,9 +609,9 @@ class Tasks:
                         print('INFO: Skipping unimplemented module/assembly: ' + metadata['ModuleID'])
                         continue
                     # Weed out irrelevant metadata entries
-                    for field,value in metadata.items():
+                    for field, value in metadata.items():
                         if field not in self.context.allMetadataFields:
-                            del(metadata[field])
+                            del (metadata[field])
                     if metadata['Type'] == '':
                         # Assume it's an empty row (i.e. fields are empty, row is just commas)
                         if (not USING_LEVELS) and (currentlevel == 1):
@@ -646,7 +644,6 @@ class Tasks:
                         currentfile = newfile
                         currentlevel = level
 
-
     def smart_split(self, line, splitchar=',', preserveQuotes=False):
         list = []
         isInQuotes = False
@@ -676,10 +673,10 @@ class Tasks:
             list.append(currfield)
         return list
 
-
-    def book(self,args):
+    def book(self, args):
         if self.context.ASSEMBLIES_DIR == '.' or self.context.MODULES_DIR == '.':
-            print('ERROR: book command is only usable for a standard directory layout, with defined assemblies and modules directories')
+            print(
+                'ERROR: book command is only usable for a standard directory layout, with defined assemblies and modules directories')
             sys.exit()
         if args.create:
             # Create book and (optionally) add categories
@@ -690,8 +687,7 @@ class Tasks:
         else:
             print('ERROR: No options specified')
 
-
-    def _book_create(self,args):
+    def _book_create(self, args):
         bookdir = args.BOOK_DIR
         if os.path.exists(bookdir):
             print('ERROR: Book directory already exists: ' + bookdir)
@@ -712,7 +708,6 @@ class Tasks:
         # Add categories (if specified)
         if args.category_list:
             self._book_categories(args)
-
 
     def _book_categories(self, args):
         bookdir = args.BOOK_DIR
@@ -747,9 +742,9 @@ class Tasks:
                     os.path.join(assembliesdir, category)
                 )
 
-
-    def update(self,args):
-        if (not args.fix_includes) and (not args.parent_assemblies) and (not args.fix_links) and (not args.generate_ids) and (not args.add_contexts):
+    def update(self, args):
+        if (not args.fix_includes) and (not args.parent_assemblies) and (not args.fix_links) and (
+        not args.generate_ids) and (not args.add_contexts):
             print('ERROR: Missing required option(s)')
             sys.exit()
         if args.attribute_files:
@@ -766,7 +761,7 @@ class Tasks:
                 head, tail = os.path.split(args.FILE)
                 type = self.type_of_file(tail)
                 if type == 'assembly':
-                    assemblyfiles = [ args.FILE ]
+                    assemblyfiles = [args.FILE]
                     modulefiles = []
                 elif type in ['procedure', 'concept', 'reference']:
                     assemblyfiles = []
@@ -784,11 +779,13 @@ class Tasks:
                 if not os.path.exists(args.book):
                     print('ERROR: ' + args.book + ' directory does not exist.')
                     sys.exit()
-                categoryset = self.scan_for_categories(os.path.join(args.book, self.context.MODULES_DIR))\
+                categoryset = self.scan_for_categories(os.path.join(args.book, self.context.MODULES_DIR)) \
                               | self.scan_for_categories(os.path.join(args.book, self.context.ASSEMBLIES_DIR))
             else:
-                categoryset = self.scan_for_categories(self.context.MODULES_DIR) | self.scan_for_categories(self.context.ASSEMBLIES_DIR)
-            assemblyfiles = self.scan_for_categorised_files(self.context.ASSEMBLIES_DIR, categoryset, filefilter='assembly')
+                categoryset = self.scan_for_categories(self.context.MODULES_DIR) | self.scan_for_categories(
+                    self.context.ASSEMBLIES_DIR)
+            assemblyfiles = self.scan_for_categorised_files(self.context.ASSEMBLIES_DIR, categoryset,
+                                                            filefilter='assembly')
             modulefiles = self.scan_for_categorised_files(self.context.MODULES_DIR, categoryset, filefilter='module')
             imagefiles = self.scan_for_categorised_files(self.context.IMAGES_DIR, categoryset)
         # Select the kind of update to implement
@@ -805,7 +802,6 @@ class Tasks:
         if args.add_contexts:
             self._add_contexts(assemblyfiles, modulefiles, attrfilelist, args)
 
-
     def scan_for_categories(self, rootdir):
         categoryset = set()
         cwd = os.getcwd()
@@ -817,7 +813,6 @@ class Tasks:
         # Add the empty category to the category set
         categoryset.add('')
         return categoryset
-
 
     def scan_for_categorised_files(self, rootdir, categoryset, filefilter=None):
         filelist = []
@@ -831,10 +826,10 @@ class Tasks:
                             filelist.append(pathname)
                         elif filefilter == 'assembly' and self.type_of_file(entry) == 'assembly':
                             filelist.append(pathname)
-                        elif filefilter == 'module' and self.type_of_file(entry) in ['module', 'concept', 'procedure', 'reference']:
+                        elif filefilter == 'module' and self.type_of_file(entry) in ['module', 'concept', 'procedure',
+                                                                                     'reference']:
                             filelist.append(pathname)
         return filelist
-
 
     def _update_fix_includes(self, assemblyfiles, modulefiles):
         # Create dictionaries mapping norm(filename) -> [pathname, pathname, ...]
@@ -858,7 +853,6 @@ class Tasks:
         for assemblyfile in assemblyfiles:
             self._update_include_directives(assemblyfile, assemblyfiledict, modulefiledict)
 
-
     def _update_include_directives(self, file, assemblyfiledict, modulefiledict):
         print('Updating include directives for file: ' + file)
         regexp = re.compile(r'^\s*include::([^\[\{]+)\[([^\]]*)\]')
@@ -869,7 +863,7 @@ class Tasks:
             with open(file) as old_file:
                 for line in old_file:
                     if line.lstrip().startswith('include::'):
-                        #print '\t' + line.strip()
+                        # print '\t' + line.strip()
                         result = regexp.search(line)
                         if result is not None:
                             includepath = result.group(1)
@@ -883,7 +877,8 @@ class Tasks:
                                         pathlist = assemblyfiledict[normincludefile]
                                         new_includepath = self.choose_includepath(dirname, pathlist)
                                         if new_includepath is not None:
-                                            new_file.write('include::' + new_includepath + '[' + result.group(2) + ']\n')
+                                            new_file.write(
+                                                'include::' + new_includepath + '[' + result.group(2) + ']\n')
                                             print('Replacing: ' + includepath + ' with ' + new_includepath)
                                             continue
                                 else:
@@ -892,7 +887,8 @@ class Tasks:
                                         pathlist = modulefiledict[normincludefile]
                                         new_includepath = self.choose_includepath(dirname, pathlist)
                                         if new_includepath is not None:
-                                            new_file.write('include::' + new_includepath + '[' + result.group(2) + ']\n')
+                                            new_file.write(
+                                                'include::' + new_includepath + '[' + result.group(2) + ']\n')
                                             print('Replacing: ' + includepath + ' with ' + new_includepath)
                                             continue
                         else:
@@ -902,7 +898,6 @@ class Tasks:
         os.remove(file)
         # Move new file
         shutil.move(abs_path, file)
-
 
     def choose_includepath(self, basedir, pathlist):
         if len(pathlist) == 1:
@@ -925,7 +920,6 @@ class Tasks:
                     response = ''
             return None
 
-
     def _scan_for_parent_assemblies(self, assemblylist):
         # Create dictionary of modules included by assemblies
         assemblyincludes = {}
@@ -941,7 +935,6 @@ class Tasks:
                 else:
                     parentassemblies[modulefile].append(assemblyfile)
         return parentassemblies, assemblyincludes
-
 
     def _update_parent_assemblies(self, assemblylist):
         parentassemblies, assemblyincludes = self._scan_for_parent_assemblies(assemblylist)
@@ -963,7 +956,7 @@ class Tasks:
                     booklist.append(bookfile)
         return booklist
 
-    def _update_fix_links(self, assemblyfiles, modulefiles, attrfilelist = None):
+    def _update_fix_links(self, assemblyfiles, modulefiles, attrfilelist=None):
         # Set of files whose links should be fixed
         fixfileset = set(assemblyfiles) | set(modulefiles)
         # Identify top-level book files to scan
@@ -977,12 +970,17 @@ class Tasks:
         for bookfile in booklist:
             booktitle = self._scan_for_title(bookfile)
             booktitle_slug = self._convert_title_to_slug(booktitle)
-            #print 'Title URL slug: ' + booktitle_slug
+            # print 'Title URL slug: ' + booktitle_slug
             print('Title: ' + booktitle)
             self.context.clear_attributes()
-            anchorid_dict, legacyid_dict, rootofid_dict, metadata_list = self._parse_file_for_anchorids(anchorid_dict, legacyid_dict, rootofid_dict, metadata_list, booktitle_slug, bookfile)
-            #print anchorid_dict.keys()
-        #print anchorid_dict
+            anchorid_dict, legacyid_dict, rootofid_dict, metadata_list = self._parse_file_for_anchorids(anchorid_dict,
+                                                                                                        legacyid_dict,
+                                                                                                        rootofid_dict,
+                                                                                                        metadata_list,
+                                                                                                        booktitle_slug,
+                                                                                                        bookfile)
+            # print anchorid_dict.keys()
+        # print anchorid_dict
         self.anchorid_dict = anchorid_dict
         self.legacyid_dict = legacyid_dict
         self.rootofid_dict = rootofid_dict
@@ -1013,18 +1011,15 @@ class Tasks:
             # Move new file
             shutil.move(abs_path, fixfile)
 
-
     def _regexp_replace_angles(self, value):
         regexp = re.compile(r'<<([^,>]+),?([^>]*)>>')
         new_value = regexp.sub(self._on_match_xref, value)
         return new_value
 
-
     def _regexp_replace_xref(self, value):
         regexp = re.compile(r'xref:([\w\-]+)\[([^\]]*)\]')
         new_value = regexp.sub(self._on_match_xref, value)
         return new_value
-
 
     def _on_match_xref(self, match_obj):
         anchorid = match_obj.group(1)
@@ -1053,7 +1048,7 @@ class Tasks:
 
     def _repair_anchorid(self, anchorid, fixfile):
         if anchorid.endswith('_{context}'):
-            plainanchorid = anchorid.replace('_{context}','')
+            plainanchorid = anchorid.replace('_{context}', '')
         else:
             plainanchorid = anchorid
         if plainanchorid in self.anchorid_dict:
@@ -1066,15 +1061,15 @@ class Tasks:
                 # Leave the ID unchanged
                 target_anchorid = anchorid
         elif '_' in plainanchorid:
-                # Last attempt to fix - ID might have wrong context value after the '_' char
-                rootofid, contextval = plainanchorid.rsplit('_', 1)
-                if rootofid in self.rootofid_dict:
-                    target_anchorid = self.choose_anchorid_from_rootofid_dict(rootofid)
-                    if target_anchorid is None:
-                        # Leave the ID unchanged
-                        target_anchorid = anchorid
-                else:
+            # Last attempt to fix - ID might have wrong context value after the '_' char
+            rootofid, contextval = plainanchorid.rsplit('_', 1)
+            if rootofid in self.rootofid_dict:
+                target_anchorid = self.choose_anchorid_from_rootofid_dict(rootofid)
+                if target_anchorid is None:
+                    # Leave the ID unchanged
                     target_anchorid = anchorid
+            else:
+                target_anchorid = anchorid
         else:
             print('WARNING: link to unknown ID: ' + anchorid)
             target_anchorid = anchorid
@@ -1088,7 +1083,8 @@ class Tasks:
                 if target_anchorid in self.anchorid_dict:
                     for booktitle_slug in self.anchorid_dict[target_anchorid]:
                         targetfile = self.anchorid_dict[target_anchorid][booktitle_slug]['FilePath']
-                        if (targetfile.startswith(self.context.MODULES_DIR)) and (parent in self.parentassemblies[targetfile]):
+                        if (targetfile.startswith(self.context.MODULES_DIR)) and (
+                                parent in self.parentassemblies[targetfile]):
                             use_context_suffix = True
             if use_context_suffix:
                 target_anchorid = rootofid + '_{context}'
@@ -1133,12 +1129,11 @@ class Tasks:
                 sys.exit()
         return self.context.resolve_raw_attribute_value(rawtitle)
 
-
     def _convert_title_to_slug(self, title):
         return title.strip().lower().replace(' ', '_').replace('-', '_')
 
-
-    def _parse_file_for_anchorids(self, anchorid_dict, legacyid_dict, rootofid_dict, metadata_list, booktitle_slug, filepath):
+    def _parse_file_for_anchorids(self, anchorid_dict, legacyid_dict, rootofid_dict, metadata_list, booktitle_slug,
+                                  filepath):
         # Define action enums
         NO_ACTION = 0
         ORDINARY_LINE = 1
@@ -1219,9 +1214,11 @@ class Tasks:
                         # Initialize the sub-dictionary
                         anchorid_dict[tentative_anchor_id] = {}
                     if booktitle_slug in anchorid_dict[tentative_anchor_id]:
-                        print('WARNING: Anchor ID: ' + tentative_anchor_id + 'appears more than once in book: ' + booktitle_slug)
+                        print(
+                            'WARNING: Anchor ID: ' + tentative_anchor_id + 'appears more than once in book: ' + booktitle_slug)
                     else:
-                        anchorid_dict[tentative_anchor_id][booktitle_slug] = { 'FilePath': os.path.relpath(os.path.realpath(filepath)) }
+                        anchorid_dict[tentative_anchor_id][booktitle_slug] = {
+                            'FilePath': os.path.relpath(os.path.realpath(filepath))}
                     tentative_anchor_id = ''
                     tentative_root_of_id = ''
                     tentative_context_of_id = None
@@ -1256,16 +1253,20 @@ class Tasks:
                         # Initialize the sub-dictionary
                         anchorid_dict[tentative_anchor_id] = {}
                     if booktitle_slug in anchorid_dict[tentative_anchor_id]:
-                        print('WARNING: Anchor ID: ' + tentative_anchor_id + 'appears more than once in book: ' + booktitle_slug)
+                        print(
+                            'WARNING: Anchor ID: ' + tentative_anchor_id + 'appears more than once in book: ' + booktitle_slug)
                     else:
-                        anchorid_dict[tentative_anchor_id][booktitle_slug] = { 'FilePath': os.path.relpath(os.path.realpath(filepath)), 'Title': title, 'Context': tentative_context_of_id }
+                        anchorid_dict[tentative_anchor_id][booktitle_slug] = {
+                            'FilePath': os.path.relpath(os.path.realpath(filepath)), 'Title': title,
+                            'Context': tentative_context_of_id}
                         if 'ConvertedFromID' in tentative_metadata:
-                            anchorid_dict[tentative_anchor_id][booktitle_slug]['ConvertedFromID'] = tentative_metadata['ConvertedFromID']
+                            anchorid_dict[tentative_anchor_id][booktitle_slug]['ConvertedFromID'] = tentative_metadata[
+                                'ConvertedFromID']
                             legacyid_dict[tentative_metadata['ConvertedFromID']] = tentative_anchor_id
                         if tentative_root_of_id != tentative_anchor_id:
                             if tentative_root_of_id not in rootofid_dict:
                                 # Initialize list of anchor IDs in this slot
-                                rootofid_dict[tentative_root_of_id] = [ tentative_anchor_id ]
+                                rootofid_dict[tentative_root_of_id] = [tentative_anchor_id]
                             else:
                                 rootofid_dict[tentative_root_of_id].append(tentative_anchor_id)
                     head, tail = os.path.split(filepath)
@@ -1296,7 +1297,8 @@ class Tasks:
                     if not os.path.exists(includefile):
                         print('ERROR: Included file does not exist: ' + includefile)
                         sys.exit()
-                    anchorid_dict, legacyid_dict, rootofid_dict, metadata_list = self._parse_file_for_anchorids(anchorid_dict, legacyid_dict, rootofid_dict, metadata_list, booktitle_slug, includefile)
+                    anchorid_dict, legacyid_dict, rootofid_dict, metadata_list = self._parse_file_for_anchorids(
+                        anchorid_dict, legacyid_dict, rootofid_dict, metadata_list, booktitle_slug, includefile)
                     tentative_anchor_id = ''
                     tentative_root_of_id = ''
                     tentative_context_of_id = None
@@ -1324,8 +1326,8 @@ class Tasks:
                     newidlist = []
                     disambig_suffix = 1
                     for line in old_file:
-                        if (regexp_title.search(line) is not None)\
-                                and (regexp_id_line1.search(prevline) is None)\
+                        if (regexp_title.search(line) is not None) \
+                                and (regexp_id_line1.search(prevline) is None) \
                                 and (regexp_id_line2.search(prevline) is None):
                             # Parse title line
                             result = regexp_title.search(line)
@@ -1343,7 +1345,6 @@ class Tasks:
             os.remove(fixfile)
             # Move new file
             shutil.move(abs_path, fixfile)
-
 
     def update_metadata(self, file, metadata):
         print('Updating metadata for file: ' + file)
@@ -1413,20 +1414,20 @@ class Tasks:
             includedfiles = self._scan_file_for_includes(bookfile, recursive=True)
             allincludedfileset |= set(includedfiles)
         # Find the set of all known module and assemblyfiles
-        categoryset = self.scan_for_categories(self.context.MODULES_DIR) | self.scan_for_categories(self.context.ASSEMBLIES_DIR)
+        categoryset = self.scan_for_categories(self.context.MODULES_DIR) | self.scan_for_categories(
+            self.context.ASSEMBLIES_DIR)
         if filtercategoryset is not None:
             categoryset &= filtercategoryset
         assemblyfiles = self.scan_for_categorised_files(self.context.ASSEMBLIES_DIR, categoryset, filefilter='assembly')
         modulefiles = self.scan_for_categorised_files(self.context.MODULES_DIR, categoryset, filefilter='module')
-        #imagefiles = self.scan_for_categorised_files(self.context.IMAGES_DIR, categoryset)
+        # imagefiles = self.scan_for_categorised_files(self.context.IMAGES_DIR, categoryset)
         orphanassemblyfiles = set(assemblyfiles) - allincludedfileset
-        orphanmodulefiles   = set(modulefiles) - allincludedfileset
+        orphanmodulefiles = set(modulefiles) - allincludedfileset
         # Report
         for orphanassemblyfile in orphanassemblyfiles:
             print(orphanassemblyfile)
         for orphanmodulefile in orphanmodulefiles:
             print(orphanmodulefile)
-
 
     def mv(self, args):
         frompattern = os.path.normpath(args.FROM_FILE)
@@ -1452,10 +1453,10 @@ class Tasks:
             fromsuffixlen = len(fromsuffix)
             fromfiles = glob.glob(frompattern.replace('{}', '*'))
             for fromfile in fromfiles:
-                if fromsuffixlen==0:
-                    fromfilling = fromfile[fromprefixlen :]
+                if fromsuffixlen == 0:
+                    fromfilling = fromfile[fromprefixlen:]
                 else:
-                    fromfilling = fromfile[fromprefixlen : -fromsuffixlen]
+                    fromfilling = fromfile[fromprefixlen: -fromsuffixlen]
                 toprefix, tosuffix = topattern.split('{}')
                 tofile = toprefix + fromfilling + tosuffix
                 # Generate a database of parent assemblies
@@ -1464,7 +1465,6 @@ class Tasks:
                 bookfiles = glob.glob('*/master.adoc')
                 parentassemblies, assemblyincludes = self._scan_for_parent_assemblies(assemblyfiles + bookfiles)
                 self._mv_single_file(parentassemblies, fromfile, tofile)
-
 
     def _mv_single_file(self, parentassemblies, fromfile, tofile):
         # Perform basic sanity checks
@@ -1476,7 +1476,7 @@ class Tasks:
             return
         # Make sure that the destination directory exists
         destination_dir, basename = os.path.split(tofile)
-        if destination_dir!='' and not os.path.exists(destination_dir):
+        if destination_dir != '' and not os.path.exists(destination_dir):
             os.makedirs(destination_dir)
         # Move the file
         os.rename(fromfile, tofile)
@@ -1484,7 +1484,6 @@ class Tasks:
         if fromfile in parentassemblies:
             for parentassembly in parentassemblies[fromfile]:
                 self._rename_included_file(parentassembly, fromfile, tofile)
-
 
     def _rename_included_file(self, file, fromfile, tofile):
         # Ignore include paths with attribute substitutions
@@ -1500,7 +1499,8 @@ class Tasks:
                         if result is not None:
                             includepath = result.group(1)
                             # Compute unique relative path, factoring out any symbolic links
-                            testpath = os.path.relpath(os.path.realpath(os.path.normpath(os.path.join(dirname, includepath))))
+                            testpath = os.path.relpath(
+                                os.path.realpath(os.path.normpath(os.path.join(dirname, includepath))))
                             if testpath == os.path.normpath(fromfile):
                                 if basename == 'master.adoc':
                                     newincludepath = tofile
@@ -1513,7 +1513,6 @@ class Tasks:
         os.remove(file)
         # Move new file
         shutil.move(abs_path, file)
-
 
     def _add_contexts(self, assemblyfiles, modulefiles, attrfilelist, args):
         # Set of files to which contexts should be added
@@ -1622,7 +1621,8 @@ class Tasks:
                                     new_file.write(':parent-of-context-' + title_id_sha + ': {context}\n')
                                     continue
                                 else:
-                                    print('ERROR: Expected assembly title before first instance of :parent-of-context-<SHA>:')
+                                    print(
+                                        'ERROR: Expected assembly title before first instance of :parent-of-context-<SHA>:')
                                     sys.exit()
                             # Process regular line
                             new_file.write(line)
@@ -1663,17 +1663,14 @@ class Tasks:
                 # Move new file
                 shutil.move(abs_path, fixfile)
 
-
     def _generate_hash(self, text):
         # Generates a 6-character hex encoded hash
         hash = hashlib.sha256(text.encode('UTF-8')).hexdigest()
         truncated_hash = hash[:6]
         return truncated_hash
 
-
     def toc(self, args):
         pass
-
 
     def atom(self, args):
         head, tail = os.path.split(args.FILE)
@@ -1689,7 +1686,7 @@ class Tasks:
                 edit_parent = False
                 edit_siblings = False
                 edit_children = True
-            else: # type == 'module'
+            else:  # type == 'module'
                 edit_parent = True
                 edit_siblings = True
                 edit_children = False
@@ -1736,20 +1733,25 @@ class Tasks:
         # Process the book or assembly
         booktitle = self._scan_for_title(filepath)
         booktitle_slug = self._convert_title_to_slug(booktitle)
-        #print 'Title URL slug: ' + booktitle_slug
+        # print 'Title URL slug: ' + booktitle_slug
         self.context.clear_attributes()
-        anchorid_dict, legacyid_dict, rootofid_dict, metadata_list = self._parse_file_for_anchorids(anchorid_dict, legacyid_dict, rootofid_dict, metadata_list, booktitle_slug, filepath)
-        #print(metadata_list)
+        anchorid_dict, legacyid_dict, rootofid_dict, metadata_list = self._parse_file_for_anchorids(anchorid_dict,
+                                                                                                    legacyid_dict,
+                                                                                                    rootofid_dict,
+                                                                                                    metadata_list,
+                                                                                                    booktitle_slug,
+                                                                                                    filepath)
+        # print(metadata_list)
         self._export_csv(metadata_list, col_header_list)
         # TODO - Also need to extract 'Category' and 'Level' metadata
 
-    def _export_csv(self, metadata_list, col_header_list = None):
+    def _export_csv(self, metadata_list, col_header_list=None):
         # Initialize 'col_header_list'
         if col_header_list is None:
             # By default, use all the keys from the first row of metadata
             col_header_list = list(metadata_list[0].keys())
-        #print(col_header_list)
-        #print(','.join(map(lambda s: '"' + s + '"', col_header_list)))
+        # print(col_header_list)
+        # print(','.join(map(lambda s: '"' + s + '"', col_header_list)))
         print(','.join(col_header_list))
         for metadata in metadata_list:
             for col_header in col_header_list:
@@ -1763,16 +1765,17 @@ class Tasks:
                 print(',', end='')
             print()
 
+
 def version(self, args):
-        pass
+    pass
 
 
 def add_module_arguments(parser):
-    parser.add_argument('CATEGORY', help='Category in which to store this module. Can use / as a separator to define sub-categories')
+    parser.add_argument('CATEGORY',
+                        help='Category in which to store this module. Can use / as a separator to define sub-categories')
     parser.add_argument('MODULE_ID', help='Unique ID to identify this module')
     parser.add_argument('-u', '--user-story', help='Text of a user story (enclose in quotes)')
     parser.add_argument('-t', '--title', help='Title of the module (enclose in quotes)')
     parser.add_argument('-j', '--jira', help='Reference to a Jira issue related to the creation of this module')
-    parser.add_argument('-p', '--parent-assemblies', help='List of assemblies that include this module, specified as a space-separated list (enclose in quotes)')
-
-
+    parser.add_argument('-p', '--parent-assemblies',
+                        help='List of assemblies that include this module, specified as a space-separated list (enclose in quotes)')

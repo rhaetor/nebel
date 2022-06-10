@@ -3,11 +3,11 @@
 
 """
 
-
 from __future__ import absolute_import
 from __future__ import print_function
+
 import re
-import sys
+
 import six.moves.configparser
 
 
@@ -60,12 +60,12 @@ class NebelContext:
         )
         config.read(configfile)
         if config.has_section('Nebel'):
-            self.ASSEMBLIES_DIR   = config.get('Nebel', 'dir.assemblies')
-            self.MODULES_DIR      = config.get('Nebel', 'dir.modules')
-            self.IMAGES_DIR       = config.get('Nebel', 'dir.images')
-            self.ASSEMBLY_PREFIX  = config.get('Nebel', 'prefix.assembly')
+            self.ASSEMBLIES_DIR = config.get('Nebel', 'dir.assemblies')
+            self.MODULES_DIR = config.get('Nebel', 'dir.modules')
+            self.IMAGES_DIR = config.get('Nebel', 'dir.images')
+            self.ASSEMBLY_PREFIX = config.get('Nebel', 'prefix.assembly')
             self.PROCEDURE_PREFIX = config.get('Nebel', 'prefix.procedure')
-            self.CONCEPT_PREFIX   = config.get('Nebel', 'prefix.concept')
+            self.CONCEPT_PREFIX = config.get('Nebel', 'prefix.concept')
             self.REFERENCE_PREFIX = config.get('Nebel', 'prefix.reference')
 
     def parse_attribute_files(self, filelist):
@@ -80,11 +80,10 @@ class NebelContext:
                         self.attributeDict[name] = [value, None]
         for name in self.attributeDict:
             self.attributeDict[name][1] = self.resolve_raw_attribute_value(self.attributeDict[name][0])
-        #for (name,duple) in self.attributeDict.items():
+        # for (name,duple) in self.attributeDict.items():
         #    print name + ': ' + duple[0] + ', ' + duple[1]
         self.scan_attributes_for_book_urls()
         # print self.bookUrlAttributes
-
 
     def update_attribute(self, name, value):
         # Adds a new attribute to the dictionary OR updates an existing entry
@@ -94,17 +93,14 @@ class NebelContext:
             resolved_value = value
         self.attributeDict[name] = [value, resolved_value]
 
-
     def lookup_attribute(self, name):
         if name in self.attributeDict:
             return self.attributeDict[name][1]
         else:
             return None
 
-
     def clear_attributes(self):
         self.attributeDict.clear()
-
 
     def resolve_raw_attribute_value(self, value):
         if len(self.attributeDict) == 0:
@@ -112,7 +108,6 @@ class NebelContext:
         regexp = re.compile(r'\{([\w\-]+)\}')
         new_value = regexp.sub(self.replace_matching_attribute, value)
         return new_value
-
 
     def replace_matching_attribute(self, match_obj):
         name = match_obj.group(1)
@@ -125,7 +120,6 @@ class NebelContext:
         if duple[1] is None:
             duple[1] = self.resolve_raw_attribute_value(duple[0])
         return duple[1]
-
 
     def scan_attributes_for_book_urls(self):
         regexp = re.compile(r'https://access.redhat.com/documentation/en-us/([^/]+)/([^/]+)/html-single/([^/]+)/?')

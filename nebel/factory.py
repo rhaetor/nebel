@@ -3,12 +3,13 @@
 
 """
 
-
 from __future__ import absolute_import
 from __future__ import print_function
+
 import os
-import sys
 import re
+import sys
+
 
 class ModuleFactory:
     def __init__(self, context):
@@ -50,7 +51,6 @@ class ModuleFactory:
         normalized = filename.replace('_', '-')
         return normalized
 
-
     def module_dirpath(self, metadata):
         category = metadata['Category']
         type = metadata['Type'].lower()
@@ -65,7 +65,7 @@ class ModuleFactory:
     def module_or_assembly_path(self, metadata):
         return os.path.join(self.module_dirpath(metadata), self.name_of_file(metadata))
 
-    def create(self, metadata, filecontents = None, clobber = False):
+    def create(self, metadata, filecontents=None, clobber=False):
         type = metadata['Type'].lower()
         filename = self.name_of_file(metadata)
         dirpath = self.module_dirpath(metadata)
@@ -104,7 +104,8 @@ class ModuleFactory:
                     for line in templatehandle:
                         if line.startswith('//INCLUDE') and ('IncludeFiles' in metadata):
                             for includedfilepath in metadata['IncludeFiles'].split(','):
-                                filehandle.write('include::' + os.path.relpath(includedfilepath, dirpath) + '[leveloffset=+1]\n\n')
+                                filehandle.write(
+                                    'include::' + os.path.relpath(includedfilepath, dirpath) + '[leveloffset=+1]\n\n')
                         else:
                             filehandle.write(line)
         return filepath
